@@ -9,3 +9,4 @@ Features
 - Freehand graphical cropping tool
 - Gives lives insights on filesize & image stats
 - Very minimal libraries required (Only PIL and Pygame are needed)
+- Pure Python
