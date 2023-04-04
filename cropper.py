@@ -3,6 +3,7 @@ import pygame as pg
 import math
 from PIL import Image
 
+#Copper - jswessler 2023
 
 pg.font.init()
 pg.init()
