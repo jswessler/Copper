@@ -54,7 +54,7 @@ def export(final=False,size=0):
         return 1
 
 
-msg = ''
+msg = 'Drag&Drop an image to start'
 targetSize=''
 flashScreen=0
 counter=0
@@ -74,10 +74,11 @@ while running:
         if event.type==pg.QUIT:
             running = False
         elif event.type==pg.DROPFILE: #When a file is dropped onto the window
-            if str(event.file).endswith('.png'):
+            if str(event.file).lower().endswith('.png'):
                 inputImage=str(event.file)
                 first = True
                 firstBuff = True
+                msg = ''
             else:
                 msg = 'Needs to be a PNG file'
         elif event.type==pg.MOUSEWHEEL: #Scrolling in and out
@@ -85,7 +86,7 @@ while running:
                 zoom*=0.9
             else:
                 zoom*=1.1  
-        elif event.type==pg.KEYDOWN:
+        elif event.type==pg.KEYDOWN: #If a key is pressed
             if event.key==pg.K_SPACE: #Reset prespective after zooming due to pygame surface shennanigans
                 first = True
             elif event.key==pg.K_LCTRL: #Reset everything
@@ -193,8 +194,8 @@ while running:
         else:
             scaFactor = max(1,imgw/(WID-300))*zoom*1.05
         dispImg = pg.transform.scale(dispImg,(imgw/scaFactor,imgh/scaFactor)) #Rescales image to scale factor determined by zoom
-        screen.blit(dispImg,(xxpos/scaFactor,yypos/scaFactor))
-        pg.draw.rect(screen,(0,0,0),(WID-300,0,300,HEI))
+        screen.blit(dispImg,(xxpos/scaFactor,yypos/scaFactor)) #Displays the image on the left side of the screen
+        pg.draw.rect(screen,(0,0,0),(WID-300,0,300,HEI)) #Black box on the right side of the screen
         s = font.render(str(imgw) + "x" + str(imgh),True,(230,230,230))
         screen.blit(s,(WID-295,20))
         cropw = coords[3][0]-coords[0][0]
@@ -216,8 +217,8 @@ while running:
         s = font.render(str(round((cropw*croph)/1000000,2)) + "Mpx",True,(230,230,230))
         screen.blit(s,(WID-265,385))
 # Render right side bar & text
-        pg.draw.line(screen,(80,80,80),(WID-95,350),(WID-95,50),10)
-        pg.draw.line(screen,(40,230,80) if newSize/1024/1024<8 else (120,160,40) if newSize/1024/1024<50 else (230,40,40),(WID-95,350),(WID-95,350-300*(newSize/origSize)),10)
+        pg.draw.line(screen,(max(1,80+10*(math.log2(newSize/1024/1024))),80,80),(WID-95,350),(WID-95,50),10)
+        pg.draw.line(screen,(40,230,80) if newSize<origSize else (-10+(50*(newSize/origSize)),280-(50*(newSize/origSize)),40),(WID-95,350),(WID-95,350-min(300,300*(newSize/origSize))),10)
         s = font.render(str(round(100*(newSize/origSize),1)) + "%",True,(230,230,230))
         screen.blit(s,(WID-115,360))
         s = font.render(str(round(newSize/1024/1024,2)) + "MB",True,(230,230,230))
@@ -261,6 +262,9 @@ while running:
     pg.draw.circle(screen,(40,40,40),(coords[3][0]/scaFactor,coords[3][1]/scaFactor),4)
     if flashScreen>counter:
         pg.draw.rect(screen,(64+(flashScreen-counter)*6,64+(flashScreen-counter)*6,64+(flashScreen-counter)*6),pg.Rect(0,0,WID-300,HEI))
+    s = font.render("a0.1",True,(240-min(240,getDist(mousex,mousey,WID,0)),240-min(240,getDist(mousex,mousey,WID,0)),240-min(240,getDist(mousex,mousey,WID,0))))
+    screen.blit(s,(WID-40,0))
+    
     dt = fps.tick(60)
     pg.display.flip()
     
