@@ -10,3 +10,12 @@ Features
 - Gives lives insights on filesize & image stats
 - Very minimal libraries required (Only PIL and Pygame are needed)
 - Pure Python
+
+Controls:
+- Space: Refresh Image
+- Shift: Make new live save
+- Alt: Resets zoom
+- Ctrl: Resets cropping
+- Arrows or Mouse: drags cropping box and image
+- Numbers: Specifiy a filesize to target
+- Enter: Output cropped image
