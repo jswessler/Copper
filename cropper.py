@@ -9,6 +9,7 @@ pg.font.init()
 pg.init()
 WID = 1280
 HEI = 720
+pathDir = os.path.abspath(os.getcwd())
 screen = pg.display.set_mode((WID,HEI),pg.RESIZABLE, vsync=1)
 running = True
 fps = pg.time.Clock()
@@ -28,8 +29,8 @@ def getDist(x,y,x2,y2):
     return math.sqrt(px+py)
 
 def saveToNormal(im,ou):
-    im.save(os.path.join("C:\\Users\\miner\\Desktop\\Copper\\","CopperOutput." + ou),ou)
-    return os.path.getsize(os.path.join("C:\\Users\\miner\\Desktop\\Copper\\","CopperOutput." + ou.lower()))
+    im.save(os.path.join(pathDir,"CopperOutput." + ou),ou)
+    return os.path.getsize(os.path.join(pathDir,"CopperOutput." + ou.lower()))
 
 def export(final=False,size=0):
     if inputImage!='':
@@ -38,8 +39,8 @@ def export(final=False,size=0):
         if outputType=='JPEG':
             im = im.convert('RGB')
         if not final:
-            im.save(os.path.join("C:\\Users\\miner\\Desktop\\Copper\\drafts\\","CopperOutput." + outputType),outputType)
-            return os.path.getsize(os.path.join("C:\\Users\\miner\\Desktop\\Copper\\drafts\\","CopperOutput." + outputType.lower()))
+            im.save(os.path.join(pathDir,"drafts\\","CopperOutput." + outputType),outputType)
+            return os.path.getsize(os.path.join(pathDir,"drafts\\","CopperOutput." + outputType.lower()))
         else:
             si = saveToNormal(im,outputType)
             if si<size*1024*1024 or size==0:
@@ -47,8 +48,8 @@ def export(final=False,size=0):
             else:
                 scale = math.sqrt(si/(size*1024*1024))+0.2*1.1
                 im = im.resize((int((coords[1][0]-coords[0][0])/scale),int((coords[3][1]-coords[0][1])/scale)))
-                im.save(os.path.join("C:\\Users\\miner\\Desktop\\Copper\\","CopperOutput." + outputType),outputType)
-                si = os.path.getsize(os.path.join("C:\\Users\\miner\\Desktop\\Copper\\","CopperOutput." + outputType.lower()))
+                im.save(os.path.join(pathDir,"CopperOutput." + outputType),outputType)
+                si = os.path.getsize(os.path.join(pathDir,"CopperOutput." + outputType.lower()))
                 return si
     else:
         return 1
@@ -91,10 +92,10 @@ while running:
                 first = True
             elif event.key==pg.K_LCTRL: #Reset everything
                 firstBuff = True
-                xpos = 0
+                xpos = imgw/40
                 ypos = imgh/40
                 xxpos = imgw/40
-                yypos = 0
+                yypos = imgh/40
             elif event.key==pg.K_LSHIFT: #Force draft save
                 adjusted = True
             elif event.key==pg.K_LALT: #Reset zoom to 1
@@ -139,7 +140,7 @@ while running:
             adjusted=True
             l = list(getDist(mousex,mousey,x[0]/scaFactor,x[1]/scaFactor) for x in coords)
             adj = l.index(min(l))
-            if min(l)<25:
+            if min(l)<50:
                 coords[adj]=[mousex*scaFactor,mousey*scaFactor] #Dragging Corners
                 if adj==0:
                     coords[1]=[coords[1][0],coords[0][1]] #Adjust 2 other corners based on the one you're adjusting right now
@@ -164,7 +165,7 @@ while running:
         for i in coords:
             i[0]+=xpos+(relmx*scaFactor)
             i[1]+=ypos+(relmy*scaFactor)
-        if not (coords[0][0]<mousex*scaFactor<coords[1][0] and coords[0][1]<mousey*scaFactor<coords[2][1]):
+        if not (coords[0][0]<mousex*scaFactor<coords[1][0] and coords[0][1]<mousey*scaFactor<coords[2][1]): #If your mouse is outside the box
             xxpos+=xpos+(relmx*scaFactor)
             yypos+=ypos+(relmy*scaFactor)
         else:
